@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import pytest
 
 TEST_DATA = [
     143845,
@@ -111,12 +112,11 @@ def solve(inputs):
     return sum
 
 
-def test_solve():
-    cases = {12: 2, 14: 2, 1969: 654, 100756: 33583}
-
-    for mass, fuel in cases.items():
-        inputs = [mass]
-        assert fuel == solve(inputs)
+@pytest.mark.parametrize("mass,fuel", [(12, 2), (14, 2), (1969, 654), (100756, 33583)])
+def test_solve(mass, fuel):
+    assert type(mass) == int
+    assert type(fuel) == int
+    assert fuel == solve([mass])
 
 
 def main():
