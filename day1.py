@@ -105,8 +105,20 @@ TEST_DATA = [
 ]
 
 
+def f(num):
+    check = num // 3 - 2
+    if check < 1:
+        return 0
+    return check + f(check)
+
+
+def solve2(inputs):
+    return sum(map(f, inputs))
+
+
 def solve(inputs):
     sum = 0
+
     for mass in inputs:
         sum += mass // 3 - 2
     return sum
@@ -114,13 +126,17 @@ def solve(inputs):
 
 @pytest.mark.parametrize("mass,fuel", [(12, 2), (14, 2), (1969, 654), (100756, 33583)])
 def test_solve(mass, fuel):
-    assert type(mass) == int
-    assert type(fuel) == int
     assert fuel == solve([mass])
+
+
+@pytest.mark.parametrize("mass,fuel", [(14, 2), (1969, 966), (100756, 50346)])
+def test_part2(mass, fuel):
+    assert fuel == solve2([mass])
 
 
 def main():
     print(solve(TEST_DATA))
+    print(solve2(TEST_DATA))
 
 
 if __name__ == "__main__":
