@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import copy
 import pytest
 import math
 
@@ -179,9 +180,25 @@ TEST_DATA = [
 ]
 
 
-def solve(arr):
+def solve1(arr):
     max_iters = math.ceil(len(arr) / 4)
-    print(f"{max_iters}")
+    # print(f"{max_iters}")
+    for i in range(max_iters):
+        op_code = arr[i * 4]
+        if op_code == 99:
+            break
+        operand1 = arr[arr[i * 4 + 1]]
+        operand2 = arr[arr[i * 4 + 2]]
+        dest = arr[i * 4 + 3]
+        if op_code == 1:
+            arr[dest] = operand1 + operand2
+        elif op_code == 2:
+            arr[dest] = operand1 * operand2
+        else:
+            print(f"Invalid op_code found. {op_code}")
+            break
+
+    return arr
 
 
 def apply_before_steps(data):
@@ -189,10 +206,12 @@ def apply_before_steps(data):
     data[2] = 2
 
 
-def main():
-    apply_before_steps(TEST_DATA)
-    solve(TEST_DATA)
-    print(TEST_DATA[0])
+def main(input_data):
+    data = copy.copy(input_data)
+
+    apply_before_steps(data)
+    # data = [1, 0, 0, 0, 99]
+    print(solve1(data))
 
 
 @pytest.mark.parametrize(
@@ -205,8 +224,8 @@ def main():
     ],
 )
 def test_solve(x, y):
-    assert x == solve(y)
+    assert x == solve1(y)
 
 
 if __name__ == "__main__":
-    main()
+    main(TEST_DATA)
