@@ -21,7 +21,7 @@ def increasing(number):
             last = a
         else:
             last = a
-    return True and equal_found
+    return equal_found
 
 
 def solve(start, end):
