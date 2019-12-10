@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import copy
+import itertools
 import pytest
 import math
 
@@ -201,6 +202,19 @@ def solve1(arr):
     return arr
 
 
+def solve2(data_im):
+    for noun, verb in itertools.product(range(100), range(100)):
+        data = copy.copy(data_im)
+        data[1] = noun
+        data[2] = verb
+        if 19690720 == solve1(data)[0]:
+            print(f"Sol2=(noun={noun}, verb={verb}) ✔")
+            break
+        del data
+    else:
+        print("Solution not found. 😐")
+
+
 def apply_before_steps(data):
     data[1] = 12
     data[2] = 2
@@ -208,10 +222,9 @@ def apply_before_steps(data):
 
 def main(input_data):
     data = copy.copy(input_data)
-
     apply_before_steps(data)
-    # data = [1, 0, 0, 0, 99]
-    print(solve1(data))
+    print("Sol1=" + str(solve1(data)[0]))
+    solve2(input_data)
 
 
 @pytest.mark.parametrize(
@@ -224,7 +237,7 @@ def main(input_data):
     ],
 )
 def test_solve(x, y):
-    assert x == solve1(y)
+    assert y == solve1(x)
 
 
 if __name__ == "__main__":
