@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import pytest
+import concurrent.futures
 import itertools
 
 INPUT = [
@@ -12,7 +13,7 @@ class Point:
     def __init__(self, x=0, y=0):
         self.x = x
         self.y = y
-        self.walked = [(0, 0)]
+        self.walked = []
 
     def get_path(self):
         return self.walked
@@ -47,22 +48,67 @@ def visit(directions, start=None):
 
 
 def manhattan_distance(loc):
-
     return abs(loc[0]) + abs(loc[1])
 
 
-def solve1(paths):
-    path1 = visit(paths[0])
-    path2 = visit(paths[1])
-    print(f"{path1}")
-    print(f"{path2}")
+def check_intersection(path1, path2):
+    points = []
     for pair in itertools.product(path1, path2):
         if pair[0] == pair[1]:
-            print("Intersection Point:" + str(pair[0]))
+            points.append(pair[0])
+            print(pair[0])
+    return points
+
+
+def solve1(paths):
+    with concurrent.futures.ProcessPoolExecutor(max_workers=4) as executor:
+        fut1 = executor.submit(visit, paths[0])
+        fut2 = executor.submit(visit, paths[1])
+        path1 = fut1.result()
+        path2 = fut2.result()
+        print("Path1 points: " + str(len(path1)))
+        print("Path2 points: " + str(len(path2)))
+
+        path11 = path1[0 : len(path1) // 2]
+        path12 = path1[len(path1) // 2 :]
+        path21 = path2[0 : len(path2) // 2]
+        path22 = path2[len(path2) // 2 :]
+
+        f1 = executor.submit(check_intersection, path11, path21)
+        f2 = executor.submit(check_intersection, path11, path22)
+        f3 = executor.submit(check_intersection, path12, path21)
+        f4 = executor.submit(check_intersection, path12, path22)
+
+        results = []
+        for future in [f1, f2, f3, f4]:
+            results.extend(future.result())
+
+    return min(map(manhattan_distance, results))
+
+
+@pytest.mark.parametrize(
+    "path, distance",
+    [
+        (["R8,U5,L5,D3", "U7,R6,D4,L4"], 6),
+        (
+            ["R75,D30,R83,U83,L12,D49,R71,U7,L72", "U62,R66,U55,R34,D71,R55,D58,R83"],
+            159,
+        ),
+        (
+            [
+                "R98,U47,R26,D63,R33,U87,L62,D20,R33,U53,R51",
+                "U98,R91,D20,R16,D67,R40,U7,R15,U6,R7",
+            ],
+            135,
+        ),
+    ],
+)
+def test_solve(path, distance):
+    assert distance == solve1(path)
 
 
 def main():
-    solve1(INPUT)
+    print(solve1(INPUT))
 
 
 if __name__ == "__main__":
