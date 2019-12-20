@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 import pytest
-import concurrent.futures
-import itertools
 import collections
 
 
 def main(input):
     commands = collections.deque(input)
+    print(commands)
 
 
 if __name__ == "__main__":

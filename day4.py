@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 import pytest
-import concurrent.futures
-import itertools
-
 
 PUZZLE_INPUT = "273025-767253"
 
