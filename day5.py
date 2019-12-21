@@ -1,11 +1,46 @@
 #!/usr/bin/env python
+import operator
 import pytest
 import collections
 
 
+def normalise(word):
+    return word.zfill(5)
+
+
+@pytest.mark.parametrize(
+    "nword, word",
+    [
+        ("11111", "11111"),
+        ("01111", "1111"),
+        ("00111", "111"),
+        ("00011", "11"),
+        ("00001", "1"),
+    ],
+)
+def test_normalise(nword, word):
+    assert nword == normalise(word)
+
+
+def solve1(program):
+    stack_ptr = 0
+    while True:
+        instruction = normalise(program[stack_ptr])
+        if instruction == "00099":
+            return program[0]
+        opcode = instruction[:2]
+        p1_mode = instruction[2]
+        p2_mode = instruction[1]
+        p3_mode = instruction[0]
+
+        p1 = program[program[stack_ptr + 1]] if p1_mode == '0' else program[stack_ptr + 1]
+        p2 = program[program[stack_ptr + 2]] if p2_mode == '0' else program[stack_ptr + 2]
+        p3_loc = program[stack_ptr + 3] if p3_mode == '0' else stack_ptr + 3
+
+
 def main(input):
-    commands = collections.deque(input)
-    print(commands)
+    answer_part1 = solve1(input)
+    print(f"Answer part1: {answer_part1}")
 
 
 if __name__ == "__main__":
@@ -46,6 +81,6 @@ if __name__ == "__main__":
     1001,223,1,223,1007,226,226,224,102,2,223,223,1005,224,674,101,1,223,
     223,4,223,99,226
     """
-    parsed_input = map(int, INPUT.split(","))
+    parsed_input = INPUT.split(",")
 
     main(parsed_input)
